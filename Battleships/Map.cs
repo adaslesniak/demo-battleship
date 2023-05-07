@@ -9,10 +9,12 @@ internal class Map
     public enum State { Unknwon, Empty, Sunk, Occupied }
 
     readonly State[,] map;
-
-    static readonly Random luck = new Random();
+    readonly GameSettings setup;
 
     internal bool HitField(Coordinates target) {
+        if(Math.Max(target.column, target.row) >= setup.mapSize) {
+            return false;
+        }
         if(map[target.column, target.row] is not State.Occupied) {
             return false;
         }
@@ -20,25 +22,34 @@ internal class Map
         return true;
     }
 
-    internal bool IsAlive() =>
-        map.Cast<State>().Any(field => field is State.Occupied);
+    public bool IsAfloat() =>
+        map.Cast<State>().Any(IsOccupied);
 
-    private Map(byte mapSize) {
-        map = new State[mapSize, mapSize];
+    public int OccupiedFields() =>
+        map.Cast<State>().Where(IsOccupied).Count();
+    
+    bool IsOccupied(State field) =>
+        field is State.Occupied;
+
+    private Map(GameSettings withSetup) {
+        this.setup = withSetup;
+        map = new State[setup.mapSize, setup.mapSize];
     }
 
-    internal static Map Prepare(byte mapSize, Ship[] ships) {
-        var instance = new Map(mapSize);
+    internal static Map Prepare(GameSettings rules, Ship[] ships) {
+        var instance = new Map(rules);
         foreach(var deployed in ships) {
             foreach(var field in ShipArea(deployed)) {
+                if(instance.map[field.column, field.row] is State.Occupied) {
+                    throw new Exception("Cheater go away");
+                }
                 instance.map[field.column, field.row] = State.Occupied;
             }
         }
         return instance;
-        //coulda/shoulda throw something in the face of invalid values, but there is no requirement for validation
     }
 
-    static Coordinates[] ShipArea(Ship subject) {
+    public static Coordinates[] ShipArea(Ship subject) {
         var fields = new Coordinates[subject.size];
         fields[0] = subject.position.topLeft;
         for(int i = 1; i < subject.size; i++) {
@@ -50,51 +61,4 @@ internal class Map
         }
         return fields;
     }
-
-    //TODO FIXME this should be in separate class, as it breaks single responsibility principle
-    internal static Ship[] AutoDeployment(GameSettings rules) {
-
-        var table = new Ship[rules.initialShips.Length];
-        var usedFields = new HashSet<Coordinates>();
-        for(int i = 0; i < rules.initialShips.Length; i++) {
-            table[i] = Prepre(rules.initialShips[i]);
-            UseFields(ShipArea(table[i]));
-        }
-        return table;
-
-
-        Ship Prepre(Ship.Factory howToMakeIt) {
-            int safetyCounter = 0;
-            while(safetyCounter++ < 101000) {
-                var ship = howToMakeIt(RandomDirection(), Map.RandomPlace(rules.mapSize));
-                if(IsFreePlaceFor(ship)) {
-                    return ship;
-                }
-            }
-            throw new Exception("Blame programmers");
-        }
-
-        bool IsFreePlaceFor(Ship ship) =>
-            ShipArea(ship).All(field =>
-                field.column < rules.mapSize
-                && field.row < rules.mapSize
-                && false == usedFields.Contains(field));
-
-        void UseFields(Coordinates[] used) {
-            foreach(var field in used) {
-                usedFields.Add(field);
-            }
-        }
-
-
-
-        Ship.Direction RandomDirection() =>
-            luck.Next() % 2 is 0
-            ? Ship.Direction.Left
-            : Ship.Direction.Down;
-    }
-
-
-    internal static Coordinates RandomPlace(int worldSize) =>
-        new((byte)luck.Next(worldSize), (byte)luck.Next(worldSize));
 }

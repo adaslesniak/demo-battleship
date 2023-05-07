@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Battleships;
-internal class Ship
+public class Ship
 {
     public enum Direction { Left, Down }
 
-    internal delegate Ship Factory(Direction direction, Coordinates topLeft);
+    public delegate Ship Factory(Direction direction, Coordinates topLeft);
 
     internal readonly byte size;
     

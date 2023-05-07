@@ -2,7 +2,7 @@ namespace Battleships;
 class Program
 {
     static readonly GameSettings options = new(
-        wihtMapSize: 10,
+        wihtMapSize: 10, 
         Ship.Battleship, Ship.Destroyer, Ship.Destroyer);
 
     static void Main(string[] args)
@@ -12,5 +12,6 @@ class Program
             new(new RandomAlgorithmPlayer(), "PlayerX", options))
             .Run();
         Console.WriteLine("that's all");
+        Console.ReadKey();
     }
 }

@@ -52,6 +52,6 @@ internal class GameLoop
             didHit
             ? IPlayerInterface.Messages.WasHit
             : IPlayerInterface.Messages.NoDamage);
-        isGameOver = defender.state.IsAlive() is false;
+        isGameOver = defender.state.IsAfloat() is false;
     }
 }

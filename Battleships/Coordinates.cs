@@ -31,9 +31,9 @@ namespace Battleships
             var isValid =
                 text?.Length >= 2
                 && TryParseColumn(text[0], out column)
-                && column < worldSize
+                && column <= worldSize
                 && byte.TryParse(text.Substring(1), out row)
-                && row < worldSize + 1;
+                && (byte)(row - 1) <= worldSize + 1;
             if(isValid is false) {
                 result = new Coordinates(0, 0);
                 return false;

@@ -11,19 +11,22 @@ namespace Battleships;
 internal class RandomAlgorithmPlayer : IPlayerInterface
 {
     HashSet<Coordinates> firedShots = new();
-    byte worldSize = 0;
+    GameSettings? setup;
     
     void IPlayerInterface.Communicate(IPlayerInterface.Messages message) { }
 
-    Map IPlayerInterface.Initialize(string withName, GameSettings rules) {
-        worldSize = rules.mapSize;
-        return Map.Prepare(worldSize, Map.AutoDeployment(rules));
+    Map IPlayerInterface.Initialize(string withName, GameSettings withRules) {
+        setup = withRules;
+        return Map.Prepare(setup, setup.RandomDeployment());
     }
 
     Coordinates IPlayerInterface.Shoot() {
+        if(setup is null) {
+            throw new Exception("player not initialized");
+        }
         Coordinates randomPlace;
         do {
-            randomPlace = Map.RandomPlace(worldSize);
+            randomPlace = setup.RandomPlace();
         } while(firedShots.Contains(randomPlace));
         firedShots.Add(randomPlace);
         return randomPlace;

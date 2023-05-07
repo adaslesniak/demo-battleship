@@ -24,5 +24,23 @@ public class ParsingCoordinates
         var encoded = coords.ToString().ToLower();
         Assert.AreEqual(encoded, expectedEncoding, $"Wrong parsing ({encoded}) -> should be {expectedEncoding}"); 
     }
-    
+
+    [TestCase("ab1")]
+    [TestCase(".1b")]
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("3")]
+    [TestCase("bb")]
+    [TestCase("d3.0")]
+    public void ShouldFailGracefully(string trashData) {
+        Assert.False(Coordinates.TryParse(trashData, out _, worldSize), $"This trash data should fail: {trashData}");
+    }
+
+    [TestCase("a0")]
+    [TestCase("z2")]
+    [TestCase("c99")]
+    [TestCase("b-1")]
+    public void ShouldFailOutOfRange(string outOfBounds) {
+        Assert.False(Coordinates.TryParse(outOfBounds, out _, worldSize), $"Those values beyond world range should fail: {outOfBounds}");
+    }
 }
