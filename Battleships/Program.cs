@@ -5,7 +5,6 @@ class Program
         wihtMapSize: 10,
         Ship.Battleship, Ship.Destroyer, Ship.Destroyer);
 
-
     static void Main(string[] args)
     {
         new GameLoop(
@@ -14,6 +13,4 @@ class Program
             .Run();
         Console.WriteLine("that's all");
     }
-
-    
 }

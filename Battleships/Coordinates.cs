@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 
 namespace Battleships
 {
-    internal struct Coordinates
+    public struct Coordinates
     {
-        internal readonly byte column;
-        internal readonly byte row;
+        public readonly byte column;
+        public readonly byte row;
 
         internal Coordinates(int column, int row) {
             this.column = (byte)column;
             this.row = (byte)row;
         }
 
-        internal Coordinates(byte column, byte row) {
+        public Coordinates(byte column, byte row) {
             this.column = column;
             this.row = row;
         }
 
         public override string ToString() =>
-            $"{(char)(column + 'a')}{row}";
+            $"{(char)(column + 'a')}{row + 1}";
 
+        //as of now does not upport worlds bigger than nr of letters a-z 
         public static bool TryParse(string? text, out Coordinates result, byte worldSize) {
             byte column = 0;
             byte row = 0;
@@ -37,7 +38,7 @@ namespace Battleships
                 result = new Coordinates(0, 0);
                 return false;
             }
-            result = new Coordinates(column, row);  
+            result = new Coordinates(column, row - 1);  
             return true;
 
             static bool TryParseColumn(char key, out byte result) {
