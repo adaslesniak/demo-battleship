@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Battleships;
 
-internal class PlayerWorld
+internal class Map
 {
     public enum State { Unknwon, Empty, Sunk, Occupied }
 
@@ -23,12 +23,12 @@ internal class PlayerWorld
     internal bool IsAlive() =>
         map.Cast<State>().Any(field => field is State.Occupied);
 
-    private PlayerWorld(byte mapSize) {
+    private Map(byte mapSize) {
         map = new State[mapSize, mapSize];
     }
 
-    internal static PlayerWorld Prepare(byte mapSize, Ship[] ships) {
-        var instance = new PlayerWorld(mapSize);
+    internal static Map Prepare(byte mapSize, Ship[] ships) {
+        var instance = new Map(mapSize);
         foreach(var deployed in ships) {
             foreach(var field in ShipArea(deployed)) {
                 instance.map[field.column, field.row] = State.Occupied;
@@ -51,12 +51,13 @@ internal class PlayerWorld
         return fields;
     }
 
-    internal static Ship[] AutoDeployment(byte sizeOfWorld, params Ship.Factory[] shipsToGenerate) {
+    //TODO FIXME this should be in separate class, as it breaks single responsibility principle
+    internal static Ship[] AutoDeployment(GameSettings rules) {
 
-        var table = new Ship[shipsToGenerate.Length];
+        var table = new Ship[rules.initialShips.Length];
         var usedFields = new HashSet<Coordinates>();
-        for(int i = 0; i < shipsToGenerate.Length; i++) {
-            table[i] = Prepre(shipsToGenerate[i]);
+        for(int i = 0; i < rules.initialShips.Length; i++) {
+            table[i] = Prepre(rules.initialShips[i]);
             UseFields(ShipArea(table[i]));
         }
         return table;
@@ -65,7 +66,7 @@ internal class PlayerWorld
         Ship Prepre(Ship.Factory howToMakeIt) {
             int safetyCounter = 0;
             while(safetyCounter++ < 101000) {
-                var ship = howToMakeIt(RandomDirection(), PlayerWorld.RandomPlace(sizeOfWorld));
+                var ship = howToMakeIt(RandomDirection(), Map.RandomPlace(rules.mapSize));
                 if(IsFreePlaceFor(ship)) {
                     return ship;
                 }
@@ -75,8 +76,8 @@ internal class PlayerWorld
 
         bool IsFreePlaceFor(Ship ship) =>
             ShipArea(ship).All(field =>
-                field.column < sizeOfWorld
-                && field.row < sizeOfWorld
+                field.column < rules.mapSize
+                && field.row < rules.mapSize
                 && false == usedFields.Contains(field));
 
         void UseFields(Coordinates[] used) {

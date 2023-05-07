@@ -6,35 +6,28 @@ using System.Threading.Tasks;
 
 namespace Battleships;
 
+//this is crap not any proper ui, so not even worthy tests,
+//but interface was not the thing of this project
 internal class ConsolePlayer : IPlayerInterface {
     string name = "The player";
-    int worldSize = 10;
+    byte worldSize = 10;
 
-    PlayerWorld IPlayerInterface.Initialize(string withName, byte withWorldSize) {
-        worldSize = withWorldSize;
+    Map IPlayerInterface.Initialize(string withName, GameSettings rules) {
+        worldSize = rules.mapSize;
         name = withName;
-        return PlayerWorld.Prepare(withWorldSize, PlayerWorld.AutoDeployment(withWorldSize, Ship.Battleship, Ship.Destroyer, Ship.Destroyer));
+        return Map.Prepare(worldSize, Map.AutoDeployment(rules));
     }
 
     Coordinates IPlayerInterface.Shoot() {
         Console.WriteLine($"{name} provide coordinates for fire: ");
         var userInput = Console.ReadLine();
-        if(false == IsInputValid(userInput, out var column, out var row)) {
-            var randomTarget = PlayerWorld.RandomPlace(worldSize);
+        if(false == Coordinates.TryParse(userInput, out var properlyParsed, worldSize)) {
+            var randomTarget = Map.RandomPlace(worldSize);
             Console.WriteLine($"bad aiming, fire went randomly at: {randomTarget}");
             return randomTarget;
         } else {
-            return new Coordinates(column, row);
+            return properlyParsed;
         }
-    }
-
-    bool IsInputValid(string? userInput, out byte column, out byte row) {
-        column = row = 0;
-        return userInput?.Length == 2
-            && Coordinates.TryParseColumn(userInput[0], out column)
-            && column < worldSize
-            && byte.TryParse(userInput.Substring(1), out row)
-            && row < worldSize;
     }
 
     void IPlayerInterface.Communicate(Battleships.IPlayerInterface.Messages message) =>

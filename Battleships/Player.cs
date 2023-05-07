@@ -9,10 +9,10 @@ namespace Battleships;
 class Player
 {
     public readonly IPlayerInterface ui;
-    public readonly PlayerWorld state;
+    public readonly Map state;
 
-    public Player(IPlayerInterface withUI, string withName, byte worldSize) {
+    public Player(IPlayerInterface withUI, string withName, GameSettings withRules) {
         ui = withUI;
-        state = withUI.Initialize(withName, worldSize);
+        state = withUI.Initialize(withName, withRules);
     }
 }
