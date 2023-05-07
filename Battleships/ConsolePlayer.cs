@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Battleships;
 
-namespace Battleships;
-
-//this is crap not any proper ui, so not even worthy tests,
-//but interface was not the thing of this project
 internal class ConsolePlayer : IPlayerInterface {
     string name = "The player";
     GameSettings? setup;

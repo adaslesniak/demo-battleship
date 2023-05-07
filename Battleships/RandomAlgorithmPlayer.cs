@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Battleships;
 
-namespace Battleships;
-
-//not necessary, but it's easier to play with this
+//not required, but it's easier to play with this
 //no tests as it's not required part
 internal class RandomAlgorithmPlayer : IPlayerInterface
 {

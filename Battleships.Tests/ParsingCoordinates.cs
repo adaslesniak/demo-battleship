@@ -36,7 +36,7 @@ public class ParsingCoordinates
         Assert.False(Coordinates.TryParse(trashData, out _, worldSize), $"This trash data should fail: {trashData}");
     }
 
-    [TestCase("a0")]
+    [TestCase("a0")] //yeah - 0 is invalid as humans are counting instead of indexing
     [TestCase("z2")]
     [TestCase("c99")]
     [TestCase("b-1")]

@@ -1,8 +1,10 @@
 ﻿using NUnit.Framework;
 namespace Battleships.Tests;
 
-//those are readonly structs so must behave like proper structs
-//and be compared/identified by value
+/// <summary>
+/// those are readonly structs so must behave like proper structs
+/// and be compared/identified by value - tests against messing with equals and hash and opearators
+/// </summary>
 [TestFixture]
 public class ComparingCoordinates
 {
